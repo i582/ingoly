@@ -15,6 +15,7 @@ type Node interface {
 	Execute() (Value, error)
 	ToString() string
 	getNodesList() []Node
+	Walk(v Visitor)
 }
 
 ////////////////
@@ -29,6 +30,15 @@ type BinaryNode struct {
 
 func (bn *BinaryNode) New(operation rune, exp1, exp2 Node) *BinaryNode {
 	return &BinaryNode{operation: operation, op1: exp1, op2: exp2}
+}
+
+func (bn *BinaryNode) Walk(v Visitor) {
+	v.EnterNode(bn)
+
+	bn.op1.Walk(v)
+	bn.op2.Walk(v)
+
+	v.LeaveNode(bn)
 }
 
 func (bn *BinaryNode) Execute() (Value, error) {
@@ -70,7 +80,7 @@ func (bn *BinaryNode) Execute() (Value, error) {
 }
 
 func (bn *BinaryNode) ToString() string {
-	return "BINARY OPERATION (Operation) '" + string(bn.operation) + "'"
+	return " " + string(bn.operation) + " "
 	//return "[" + bn.op1.ToString() + ", " + bn.op2.ToString() +
 	//	", OP:" + string(bn.operation) + "]"
 }
@@ -106,11 +116,19 @@ func (un *UnaryNode) Execute() (Value, error) {
 }
 
 func (un *UnaryNode) ToString() string {
-	return "UNARY OPERATION (Operation) '" + string(un.operation) + "'"
+	return " " + string(un.operation) + ""
 }
 
 func (un *UnaryNode) getNodesList() []Node {
 	return []Node{un.op1}
+}
+
+func (un *UnaryNode) Walk(v Visitor) {
+	v.EnterNode(un)
+
+	un.op1.Walk(v)
+
+	v.LeaveNode(un)
 }
 
 ////////////////////////////
@@ -129,11 +147,17 @@ func (uvn *UsingVariableNode) Execute() (Value, error) {
 }
 
 func (uvn *UsingVariableNode) ToString() string {
-	return "USING VARIABLE (Identifier) '" + uvn.name + "'"
+	return " " + uvn.name + " "
 }
 
 func (uvn *UsingVariableNode) getNodesList() []Node {
 	return []Node{}
+}
+
+func (uvn *UsingVariableNode) Walk(v Visitor) {
+	v.EnterNode(uvn)
+
+	v.LeaveNode(uvn)
 }
 
 ///////////////
@@ -149,11 +173,17 @@ func (vn *ValueNode) Execute() (Value, error) {
 }
 
 func (vn *ValueNode) ToString() string {
-	return "VALUE NODE (Value) '" + vn.value.AsString() + "'"
+	return " " + vn.value.AsString() + " "
 }
 
 func (vn *ValueNode) getNodesList() []Node {
 	return []Node{}
+}
+
+func (vn *ValueNode) Walk(v Visitor) {
+	v.EnterNode(vn)
+
+	v.LeaveNode(vn)
 }
 
 ///////////////

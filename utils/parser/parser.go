@@ -19,7 +19,7 @@ func (ps *Parser) New(tokens []tokenizer.Token) *Parser {
 }
 
 func (ps *Parser) Parse() Ast {
-	ast := Ast{[]Statement{}, ps.variables}
+	ast := Ast{[]Node{}, ps.variables}
 
 	for !ps.match(tokenizer.EOF) {
 		ast.Tree = append(ast.Tree, ps.STATEMENT())
@@ -42,7 +42,7 @@ func (ps *Parser) ASSIGNSTATEMENT() Statement {
 		variable := current.Lexeme
 		_, ok := ps.consume(tokenizer.EQUAL)
 		if ok == nil {
-			return &AssignmentStatement{Variable: variable, Expression: ps.EXPRESSION()}
+			return &AssignmentStatement{Variable: NewScopeVar(variable), Expression: ps.EXPRESSION()}
 		}
 	}
 	panic("Eq err")

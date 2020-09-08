@@ -30,10 +30,9 @@ func (lx Tokenizer) Length() int {
 func (lx *Tokenizer) peek(relativePosition int) rune {
 	pos := lx.pos + relativePosition
 	if pos >= lx.Length() {
-		return rune(`\0`[0])
+		return '\x00'
 	}
-	result, _ := utf8.DecodeRuneInString(string(lx.Input[pos]))
-	return result
+	return []rune(lx.Input)[pos]
 }
 
 func (lx *Tokenizer) next() rune {
@@ -114,7 +113,7 @@ func tokenOneSym(sym rune) TokenType {
 	return NIL
 }
 
-//func tokenTwoSym(twoSym string) TokenType {
+// func tokenTwoSym(twoSym string) TokenType {
 //	switch twoSym {
 //	case "+=":
 //		return PLUSEQUAL
@@ -122,12 +121,13 @@ func tokenOneSym(sym rune) TokenType {
 //		return MINEQUAL
 //	}
 //	return NIL
-//}
+// }
 
 func (lx *Tokenizer) tokenizeText() error {
 	lx.next()
 
-	var builder strings.Builder
+	var res string
+	// var builder strings.Builder
 	current := lx.peek(0)
 
 	for {
@@ -136,29 +136,29 @@ func (lx *Tokenizer) tokenizeText() error {
 			switch current {
 			case '"':
 				current = lx.next()
-				builder.WriteRune('"')
+				res += string('"')
 				continue
 			case 'n':
 				current = lx.next()
-				builder.WriteRune('\n')
+				res += string('\n')
 				continue
 			case 't':
 				current = lx.next()
-				builder.WriteRune('\t')
+				res += string('\t')
 				continue
 			}
-			builder.WriteRune('\\')
+			res += string('\\')
 			continue
 		}
-		if current == '"' {
+		if current == '"' || current == '\x00' {
 			break
 		}
-		builder.WriteRune(current)
+		res += string(current)
 		current = lx.next()
 	}
 	lx.next()
 
-	lx.addToken(STRING, builder.String())
+	lx.addToken(STRING, res)
 	return nil
 }
 

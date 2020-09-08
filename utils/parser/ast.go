@@ -6,7 +6,7 @@ import (
 )
 
 type Ast struct {
-	Tree      []Statement
+	Tree      []Node
 	variables map[string]Value
 }
 
