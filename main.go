@@ -28,6 +28,12 @@ func main() {
 		stmt.Walk(w)
 	}
 
+	p := parser.NewPrinter()
+
+	for _, stmt := range ast.Tree {
+		stmt.Walk(p)
+	}
+
 	fmt.Println(w.Vars)
 
 	// for line, instruction := range ast.Tree {

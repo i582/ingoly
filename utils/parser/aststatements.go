@@ -65,7 +65,9 @@ func (as *AssignmentStatement) getNodesList() []Node {
 }
 
 func (as *AssignmentStatement) Walk(v Visitor) {
-	v.EnterNode(as)
+	if !v.EnterNode(as) {
+		return
+	}
 
 	as.Variable.Walk(v)
 	as.Expression.Walk(v)

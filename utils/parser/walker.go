@@ -5,11 +5,11 @@ import (
 )
 
 type BlockWalker struct {
-	Vars map[string]struct{}
+	ctx *BlockContext
 }
 
 func NewBlockWalker() BlockWalker {
-	return BlockWalker{Vars: make(map[string]struct{})}
+	return BlockWalker{ctx: NewBlockContext()}
 }
 
 func (w BlockWalker) EnterNode(n Node) bool {
@@ -18,11 +18,18 @@ func (w BlockWalker) EnterNode(n Node) bool {
 		fmt.Println("sss")
 
 	case *ScopeVar:
-		_, ok := w.Vars[s.Name]
+		_, ok := w.ctx.Vars[s.Name]
 		if !ok {
-			w.Vars[s.Name] = struct{}{}
+			w.ctx.Vars[s.Name] = struct{}{}
 		}
 		fmt.Println(s.Name)
+
+	case *BinaryNode:
+		switch s.operation {
+		case '+':
+
+		}
+
 	}
 
 	return true
